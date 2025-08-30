@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, TextInput, Button, FlatList, Text, StyleSheet } from "react-native";
+import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../lib/config";
 
 export default function ChatScreen({ route }) {
   const { user } = route.params;
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
 
-  const sendMessage = () => {
-    if (text.trim() === "") return;
-    const newMessage = { id: Date.now().toString(), text, sender: "Yo" };
-    setMessages([...messages, newMessage]);
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  useEffect(() => {
+    const subscription = supabase
+      .from(`messages:receiver=eq.${user.name}`)
+      .on("INSERT", (payload) => setMessages((prev) => [...prev, payload.new]))
+      .subscribe();
+
+    return () => supabase.removeSubscription(subscription);
+  }, []);
+
+  const sendMessage = async () => {
+    if (!text.trim()) return;
+    await supabase.from("messages").insert([{ sender: "Yo", receiver: user.name, content: text }]);
     setText("");
   };
 
@@ -19,10 +31,8 @@ export default function ChatScreen({ route }) {
       <FlatList
         style={styles.messages}
         data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Text style={styles.message}>{item.sender}: {item.text}</Text>
-        )}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <Text style={styles.message}>{item.sender}: {item.content}</Text>}
       />
       <View style={styles.inputContainer}>
         <TextInput
