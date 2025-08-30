@@ -13,19 +13,9 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Mi Perfil</Text>
       <Text>Nombre:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Tu nombre"
-        value={name}
-        onChangeText={setName}
-      />
+      <TextInput style={styles.input} placeholder="Tu nombre" value={name} onChangeText={setName} />
       <Text>Email:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Tu email"
-        value={email}
-        onChangeText={setEmail}
-      />
+      <TextInput style={styles.input} placeholder="Tu email" value={email} onChangeText={setEmail} />
       <Button title="Guardar Perfil" onPress={saveProfile} />
     </View>
   );
@@ -34,11 +24,5 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   title: { fontSize: 20, fontWeight: "bold", marginBottom: 20 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 8,
-    marginBottom: 15,
-  },
+  input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 5, padding: 8, marginBottom: 15 },
 });
