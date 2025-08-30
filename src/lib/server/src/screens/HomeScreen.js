@@ -50,6 +50,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginVertical: 10,
   },
+  const payService = async () => {
+  const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount: 1000 }) // 10€ por ejemplo
+  });
+  const { url } = await response.json();
+  window.open(url, "_blank");
+};
+
   map: {
     flex: 1,
   },
