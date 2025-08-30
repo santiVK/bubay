@@ -2,13 +2,22 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
+import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../lib/config";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const [users, setUsers] = useState([
-    { id: 1, name: "Juan", latitude: 40.4168, longitude: -3.7038 },
-    { id: 2, name: "María", latitude: 40.4268, longitude: -3.7138 }
-  ]);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const { data } = await supabase.from("profiles").select("*");
+      if (data) setUsers(data);
+    };
+    fetchUsers();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -25,42 +34,20 @@ export default function HomeScreen() {
         {users.map((user) => (
           <Marker
             key={user.id}
-            coordinate={{ latitude: user.latitude, longitude: user.longitude }}
+            coordinate={{ latitude: user.latitude || 40.4168, longitude: user.longitude || -3.7038 }}
             title={user.name}
             description="Haz clic para chatear"
             onCalloutPress={() => navigation.navigate("Chat", { user })}
           />
         ))}
       </MapView>
-      <Button
-        title="Mi Perfil"
-        onPress={() => navigation.navigate("Profile")}
-      />
+      <Button title="Mi Perfil" onPress={() => navigation.navigate("Profile")} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  title: {
-    textAlign: "center",
-    fontSize: 18,
-    marginVertical: 10,
-  },
-  const payService = async () => {
-  const response = await fetch(`${API_BASE_URL}/create-checkout-session`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount: 1000 }) // 10€ por ejemplo
-  });
-  const { url } = await response.json();
-  window.open(url, "_blank");
-};
-
-  map: {
-    flex: 1,
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
+  title: { textAlign: "center", fontSize: 18, marginVertical: 10 },
+  map: { flex: 1 },
 });
